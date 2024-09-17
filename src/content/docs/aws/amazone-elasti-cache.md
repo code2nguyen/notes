@@ -8,6 +8,13 @@ Amazon ElastiCache is a full managed in-memory data store service. There are two
 - Memcached
 - Redis OSS
 
+**Features**
+
+- Billed by node size and hours of use.
+- ElastiCache EC2 nodes cannot be accessed from the Internet, nor can they be accessed by EC2 instances in other VPCs.
+
+
+
 # Memcached
 
 You can get started with a **serverless cache** or choose to design your own **cache cluster**.
