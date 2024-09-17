@@ -4,6 +4,8 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://code2nguyen.github.io/',
+	base: 'notes',
 	integrations: [
 		starlight({
 			title: 'My Notes',
