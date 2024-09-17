@@ -1,0 +1,267 @@
+---
+title: Drift monitoring
+---
+
+import { Code } from '@astrojs/starlight/components';
+import sample_data_drift_code from '/code/ml/sample_data_drift.py?raw';
+import simple_regression_model_monitoring from '/code/ml/simple_regression_model_monitoring.py?raw';
+import model_monitoring_classification from '/code/ml/model_monitoring_classification.py?raw';
+import data_drift_monitoring from '/code/ml/data_drift_monitoring.py?raw';
+import docker_compose_drift_monitoring from '/code/ml/docker-compose.drift-monitoring.yml?raw';
+import data_drift_flow from '/code/ml/data_drift_flow.py?raw';
+
+## Phase 1 : Contrôle des performances
+
+- **Modèles de substitution**
+Utilisation d'un modèle simplifié ou alternatif pour estimer la performance du modèle principal	
+
+- **Analyse des scores de confiance**
+Utilisation des scores de confiance générés par le modèle pour estimer sa performance
+
+## Phase 2 : Analyse des causes profondes
+- **Convariate drift** également connu sous le nom de Data Drift, fait référence au phénomène selon lequel la distribution des données d'entrée change au fil du temps.
+    - Change in the input's distribution
+    - Possible to detect using statistical method
+    - Not every drift impact performance
+
+- **Concept drift** désigne le phénomène selon lequel la dynamique entre les caractéristiques d'entrée et la variable cible évolue au fil du temps, entraînant une détérioration des performances du modèle.
+    - Sudden Drift (Dérive soudaine)
+    - Gradual Drift (Dérive graduelle)
+    - Incremental Drift (Dérive incrémentale)
+    - Recurring Concepts (Concepts récurrents)
+
+### Détecter une dérive ?
+
+- **Approches basées sur le modèle**
+    - _Surveillance des prédictions_	
+    - _Détecteurs de dérive:_ Utiliser des modèles spéciaux pour repérer les changements dans les modèles de données.	
+    - _Méthodes d'ensemble:_ Comparer les résultats de plusieurs modèles pour trouver des désaccords.
+- **Tests statistiques**
+    - _Détection de points de changement:_ Rechercher des changements soudains dans les propriétés des données.
+    - _Comparaison de distributions:_ Mesurer les différences entre les distributions de données anciennes et nouvelles.
+    - _Test de performance:_ Comparer la précision du modèle sur différentes périodes.
+- **Analyse des caractéristiques**
+    - _Changements d'importance_: Vérifier si les caractéristiques importantes deviennent moins pertinentes au fil du temps.
+    - _Changements de distribution_: Analyser comment les distributions des caractéristiques changent.
+- **Prétraitement des données**
+    - _Fenêtres temporelles:_ Diviser les données en segments temporels et les comparer.
+    - _Rééchantillonnage:_ Essayer de recréer la distribution de données originale avec de nouvelles données.
+- **Implication humaine**
+    - _Revue d'expert_	
+    - _Retour des utilisateurs_	
+
+### Approche Réactive
+Observer les performances de votre modèle sur de nouvelles données.
+- **Pour les Modèles de Régression :**
+    - Erreur Quadratique Moyenne (MSE)
+    - Racine de l'Erreur Quadratique Moyenne (RMSE)
+- **Pour les Modèles de Classification :**
+    - Aire Sous la Courbe ROC (AUC ROC)
+        - Métrique: Textes d'Avis
+        
+        Mesure la dérive des données dans les textes d'avis en utilisant l'AUC ROC. Détecte les changements dans la distribution des données, assurant la robustesse du modèle.	
+
+    - Précision, Rappel, Exactitude
+    - Score F1
+### Approche Proactive
+Suivre les changements dans les données qui alimentent votre modèle
+- **Statistiques Descriptives :**
+    - moyenne, médiane, mode, min et max.
+- **Surveillance de la Distribution :**
+    - _Test de Kolmogorov-Smirnov_
+
+    Une méthode statistique non paramétrique puissante qui évalue si deux ensembles de données proviennent de la même distribution sous-jacente. Elle est utile pour comparer les distributions et identifier les dérives potentielles.	
+
+    - Indice de Stabilité de la Population (PSI)
+
+    Une mesure permettant de surveiller les changements dans les variables catégorielles à travers différents ensembles de données ou périodes de temps. Elle permet d'identifier les changements dans les caractéristiques de la population.	
+
+    - _Distance de Wasserstein (Distance de Earth-Mover)_
+        - Métrique: Caractéristiques Numérique
+        
+        Évalue la dérive des caractéristiques numériques. Les changements dans la distribution des caractéristiques impactent la précision du modèle.	
+
+    - _Divergence de Kullback-Leibler_
+    
+    - _Distance de Jensen-Shannon_
+        - Métrique :Dérive Cible et Prédiction
+            
+        Suit la dérive entre les valeurs cibles et les prédictions du modèle. Détecte si les prédictions du modèle s'écartent des résultats réels, essentiel pour maintenir la fiabilité du modèle.	    
+
+        -- Métrique: Caractéristiques Catégorielles
+
+        Détecte les changements dans les distributions de catégories affectant les prédictions.	
+
+## Phase 3 : Résolution des problèmes
+- Réentraînement
+- Révision du cas d'utilisation	
+- Ajuster les processus en aval	
+- Premières étapes lorsqu'on débute	
+
+## Evidently AI
+
+```sh title="Install using pip"
+pip install evidently
+```
+
+```sh title="Discovery evidently with demo-projects"
+evidently ui --demo-projects all
+```
+
+### Sample evidently report
+
+<Code code={sample_data_drift_code} lang="python" title="code/ml/sample_data_drift.py" />
+
+### Regression Report
+Évaluer et surveiller les modèles de régression
+Métriques:
+- MAE 
+- MSE 
+- RMSE 
+- R² 
+- Coefficient de corrélation de Pearson 
+- Distribution des résidus
+
+<Code code={simple_regression_model_monitoring} lang="python" title="code/ml/simple_regression_model_monitoring.py" />
+
+
+```sh title="Script to generate report"
+python simple_regression_model_monitoring.py
+evidently ui --workspace ./datascientest-workspace/
+```
+
+### Classification Report
+
+Métriques:
+- Précision 
+- Rappel 
+- Score F1
+
+<Code code={model_monitoring_classification} lang="python" title="code/ml/model_monitoring_classification.py" />
+
+```sh title="Script to generate report"
+python model_monitoring_classification.py
+evidently ui --workspace ./datascientest-workspace/
+```
+
+### Rapport avec mesure spécifiques
+
+```python
+data_drift_column_report = Report(metrics=[
+    ColumnDriftMetric(column_name='ArrDelay'),
+    ColumnDriftMetric(column_name='ArrDelay', stattest='psi')
+])
+```
+
+### Test suites
+
+```python title="Create a  testsuite"
+from evidently.test_suite import TestSuite
+from evidently.test_preset import DataDriftTestPreset
+
+# Créer une suite de tests
+suite_derive_donnees = TestSuite(tests=[
+    DataDriftTestPreset(),
+])
+
+# Exécuter la suite
+suite_derive_donnees.run(reference_data=donnees_ref, current_data=donnees_actuelles)
+
+# Vérifier les résultats
+if suite_derive_donnees.as_dict()['summary']['all_passed']:
+    print("Tous les contrôles de qualité des données ont réussi !")
+else:
+    print("Certains problèmes de qualité des données ont été détectés. Consultez le rapport pour plus de détails.")
+```
+
+
+- DataQualityTestPreset
+    - Évalue la qualité et l'intégrité des données.
+    - Fournit des statistiques détaillées sur les fonctionnalités et une vue d'ensemble du comportement.
+    - Calcule les statistiques de base pour les caractéristiques numériques, catégorielles et temporelles.
+    - Visualise la distribution et le comportement des données dans le temps.
+- TestColumnValueMean
+    - Un test spécifique dans le DataQualityTestPreset.
+    - Vérifie la valeur moyenne d'une colonne par rapport à une référence ou à une condition définie.
+    - Utile pour surveiller les changements dans la valeur moyenne de caractéristiques spécifiques.
+    - Fonctionne avec ou sans données de référence.
+- NoTargetPerformanceTestPreset
+
+    Suite de tests sans variable cible
+
+```python
+no_target_performance_suite = TestSuite(tests=[NoTargetPerformanceTestPreset()])
+# We can split the datasets into different batches, of same batch size, and try test suite with different batch data, to find whether the model performance is declining or not with different batches
+no_target_performance_suite.run(reference_data=processed_data_reference, current_data=processed_data_prod_simulation[2*batch_size:3*batch_size])
+```
+
+- Suite de tests avec des métriques spécifiques
+
+```python
+# build the test suites
+custom_performance_suite = TestSuite(tests=[
+    TestShareOfMissingValues(eq=0),
+    TestPrecisionScore(gt=0.5),
+    TestRecallScore(gt=0.3),
+    TestAccuracyScore(gte=0.75),
+])
+
+# run the test suites
+custom_performance_suite.run(reference_data=processed_reference, current_data=processed_prod_simulation[:batch_size])
+
+# to display results in a jupyter notebook
+custom_performance_suite.show(mode='inline')
+```
+
+**Simple test suite report**
+<Code code={data_drift_monitoring} lang="python" title="code/ml/data_drift_monitoring.py" />
+
+```sh title="Script to generate report"
+python data_drift_monitoring.py
+evidently ui --workspace ./datascientest-workspace/
+```
+### Considération sur la surveillance de la Dérive des Données
+
+1. Nombreuses Caractéristiques Faibles	
+2. Peu de Caractéristiques Importantes	
+
+Donc, considération clés
+- Prioriser la dérive des prédictions par rapport à la dérive des caractéristiques
+- Utiliser la dérive des données pour anticiper les problèmes dans les environnements de production avec des retards de feedback
+
+
+## Setup flow monitoring
+
+1. Load data
+2. Traning model
+3. Save data and model
+4. Create report
+
+**Les outils**
+- Evidently
+- PostgreSQL
+- Grafana
+- Prefect
+
+**Mesures Clés d'Evidently :**
+- Dérive de Colonne : Changements dans les caractéristiques individuelles
+- Dérive de Jeu de Données : Changements dans la distribution globale des données
+- Valeurs Manquantes : Augmentation des lacunes dans les données
+
+
+### Setup docker service
+- PostgreSQL
+- Grafana
+
+<Code code={docker_compose_drift_monitoring} lang="yml" title="code/ml/docker-compose.drift-monitoring.yml" />
+
+
+```sh title="Start docker containers"
+docker compose -f docker-compose.drift-monitoring.yml up -d
+```
+
+### Main flow script
+<Code code={data_drift_flow} lang="yml" title="code/ml/data_drift_flow.yml" />
+
+
+

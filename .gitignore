@@ -19,3 +19,9 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+.venv
+output
+data_drift_report.json
+Classification Report.html
+datascientest-workspace
+data_drift_suite.html

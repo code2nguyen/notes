@@ -17,7 +17,14 @@ export default defineConfig({
 					label: 'AWS',
 					autogenerate: { directory: 'aws' },
 
-				}
+				},
+				{
+					label: 'Machine Learning',
+					autogenerate: { directory: 'ml' },
+
+				},
+				{ slug: 'setup' },
+
 			],
 		}),
 	],
