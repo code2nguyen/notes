@@ -1,0 +1,9 @@
+:root {
+    --sl-content-width: 60rem;
+  }
+
+img.centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

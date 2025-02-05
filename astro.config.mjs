@@ -12,6 +12,10 @@ export default defineConfig({
 			social: {
 				github: 'https://github.com/code2nguyen/notes',
 			},
+			customCss: [
+				// Relative path to your custom CSS file
+				'./src/styles/custom.css',
+			],
 			sidebar: [
 				{
 					label: 'AWS',
@@ -23,8 +27,21 @@ export default defineConfig({
 					autogenerate: { directory: 'ml' },
 
 				},
-				{ slug: 'setup' },
+				{
+					label: 'Python',
+					autogenerate: { directory: 'python' },
 
+				},
+				{
+					label: 'DevOps',
+					autogenerate: { directory: 'devops' },
+
+				},
+				{
+					label: 'Miscellaneous',
+					autogenerate: { directory: 'others' },
+
+				}
 			],
 		}),
 	],
